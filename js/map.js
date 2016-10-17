@@ -55,40 +55,54 @@ var restaurantList = [
     }
     ];
 
-var genreList = ko.observableArray();
 
-var populategenreList = function() {
-
-    for (i = 0; i < restaurantList.length; ++i) {
-
-      var genre = restaurantList[i].genre;
-
-        if (genreList.indexOf(genre) > -1) continue;
-        genreList.push(genre);
-    };
-};
-
-populategenreList();
-
-var markers = [];
 
 var viewModel = function() {
 
+  var self = this;
+
+  self.genreList = ko.observableArray();
+
+  self.markers = ko.observableArray();
+
+  self.selectedGenre = ko.observable();
+
  for (i = 0; i < restaurantList.length; i++) {
 
-    var position = restaurantList[i].position;
-
-    var name = restaurantList[i].name;
-
     var marker = new google.maps.Marker({
-        position: position,
-        title: name,
+        position: restaurantList[i].position,
+        title: restaurantList[i].name,
+        show: ko.observable(restaurantList[i].show),
+        genre: ko.observable(restaurantList[i].genre),
         map: map
         });
 
-    markers.push(marker);
+    if (restaurantList[i].show == true) {
+    self.markers.push(marker);
+    };
+  };
+
+  for (i = 0; i < restaurantList.length; ++i) {
+
+      var genre = restaurantList[i].genre;
+
+        if (self.genreList.indexOf(genre) > -1) continue;
+        self.genreList.push(genre);
+  };
+
+  if (self.selectedGenre.length > 0) {
+
+    for (i = 0; i < markers.length; i++) {
+
+      var genre = markers[i].genre;
+
+      if (genre.equals(self.selectedGenre)) {
+        self.markers[i].show(true);
+      } else {
+        self.markers[i].show(false);
+      };
+    };
   };
 };
 
 ko.applyBindings(new viewModel());
-

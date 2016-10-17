@@ -15,11 +15,11 @@
           <h1><span>Dog-Friendly Restaurants in</span><br>SouthEnd Charlotte</h1>
           <div class="dropdown">
     <h2>Select a category to filter by</h2>
-    <select data-bind="options: genreList"></select>
+    <select data-bind="options: genreList, value: selectedGenre, optionsCaption: 'All'"></select>
             </div>
-          <ul data-bind="foreach: { data: restaurantList, as: 'restaurant' }">
+          <ul data-bind="foreach: markers">
               <a><h3>
-                <span data-bind="text: restaurant.name"></span>
+                <span data-bind="text: title"></span>
               </h3></a>
           </ul>
         </div>
