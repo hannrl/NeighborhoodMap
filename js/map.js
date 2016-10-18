@@ -89,9 +89,9 @@ var viewModel = function() {
 
       if (genre.localeCompare(self.currentFilter) === 0) {
 
-      restaurantList[i] = true;
+      restaurantList[i].show = true;
       } else {
-      restaurantList[i] = false;
+      restaurantList[i].show = false;
       }
       };
     console.log(ko.toJSON(self.currentFilter));
