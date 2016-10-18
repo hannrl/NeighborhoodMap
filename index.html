@@ -15,9 +15,10 @@
           <h1><span>Dog-Friendly Restaurants in</span><br>SouthEnd Charlotte</h1>
           <div class="dropdown">
     <h2>Select a category to filter by</h2>
-    <select data-bind="options: genreList, value: selectedGenre, optionsCaption: 'All'"></select>
+    <select data-bind="options: genreList, value: currentFilter, optionsCaption: 'Choose one'"></select>
+    <input type="button" data-bind="click: applyFilter, enable: currentFilter" Value="Filter"/>
             </div>
-          <ul data-bind="foreach: markers">
+          <ul data-bind="foreach: filteredList">
               <a><h3>
                 <span data-bind="text: title"></span>
               </h3></a>

@@ -63,23 +63,39 @@ var viewModel = function() {
 
   self.genreList = ko.observableArray();
 
-  self.markers = ko.observableArray();
+  self.filteredList = ko.observableArray();
 
-  self.selectedGenre = ko.observable();
+    for (i = 0; i < restaurantList.length; i++) {
 
- for (i = 0; i < restaurantList.length; i++) {
+      var marker = new google.maps.Marker({
+          position: restaurantList[i].position,
+          title: restaurantList[i].name,
+          show: ko.observable(restaurantList[i].show),
+          genre: ko.observable(restaurantList[i].genre),
+          map: map
+          });
 
-    var marker = new google.maps.Marker({
-        position: restaurantList[i].position,
-        title: restaurantList[i].name,
-        show: ko.observable(restaurantList[i].show),
-        genre: ko.observable(restaurantList[i].genre),
-        map: map
-        });
-
-    if (restaurantList[i].show == true) {
-    self.markers.push(marker);
+      if (restaurantList[i].show) {
+      self.filteredList.push(marker); }
     };
+
+  self.currentFilter = ko.observable();
+
+  self.applyFilter = function() {
+
+    for (i = 0; i < self.filteredList.length; i++) {
+
+      var genre = self.filteredList[i].genre;
+
+      if (genre.localeCompare(self.currentFilter) === 0) {
+
+      restaurantList[i] = true;
+      } else {
+      restaurantList[i] = false;
+      }
+      };
+    console.log(ko.toJSON(self.currentFilter));
+    console.log(ko.toJSON(self.filteredList));
   };
 
   for (i = 0; i < restaurantList.length; ++i) {
@@ -89,20 +105,7 @@ var viewModel = function() {
         if (self.genreList.indexOf(genre) > -1) continue;
         self.genreList.push(genre);
   };
-
-  if (self.selectedGenre.length > 0) {
-
-    for (i = 0; i < markers.length; i++) {
-
-      var genre = markers[i].genre;
-
-      if (genre.equals(self.selectedGenre)) {
-        self.markers[i].show(true);
-      } else {
-        self.markers[i].show(false);
-      };
-    };
-  };
 };
+
 
 ko.applyBindings(new viewModel());
