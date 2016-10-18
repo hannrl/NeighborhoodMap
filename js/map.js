@@ -1,110 +1,124 @@
-var restaurantList = [
-    {
-      name : "Futabuta",
-      position: {lat: 35.215340, lng: -80.855395},
-      genre : "Asian",
-      show: true
+var restaurantList = [{
+    name: "Futabuta",
+    position: {
+        lat: 35.215340,
+        lng: -80.855395
     },
-    {
-      name : "Blaze Pizza",
-      position: {lat: 35.212812, lng: -80.858871},
-      genre : "Italian",
-      show: true
+    genre: "Asian",
+    show: true
+}, {
+    name: "Blaze Pizza",
+    position: {
+        lat: 35.212812,
+        lng: -80.858871
     },
-    {
-      name : "Hot Taco",
-      position: {lat: 35.216740, lng: -80.858839},
-      genre : "Mexican",
-      show: true
+    genre: "Italian",
+    show: true
+}, {
+    name: "Hot Taco",
+    position: {
+        lat: 35.216740,
+        lng: -80.858839
     },
-    {
-      name : "Seoul Food",
-      position: {lat: 35.219258, lng: -80.857583},
-      genre : "Korean",
-      show: true
+    genre: "Mexican",
+    show: true
+}, {
+    name: "Seoul Food",
+    position: {
+        lat: 35.219258,
+        lng: -80.857583
     },
-    {
-      name : "Mac's Speed Shop",
-      position: {lat: 35.202947, lng: -80.864367},
-      genre : "Barbecue",
-      show: true
+    genre: "Korean",
+    show: true
+}, {
+    name: "Mac's Speed Shop",
+    position: {
+        lat: 35.202947,
+        lng: -80.864367
     },
-    {
-      name : "Sauceman's",
-      position: {lat: 35.213986, lng: -80.861285},
-      genre : "Barbecue",
-      show: true
+    genre: "Barbecue",
+    show: true
+}, {
+    name: "Sauceman's",
+    position: {
+        lat: 35.213986,
+        lng: -80.861285
     },
-    {
-      name : "Phat Burrito",
-      position: {lat: 35.214981, lng: -80.856628},
-      genre : "Mexican",
-      show: true
+    genre: "Barbecue",
+    show: true
+}, {
+    name: "Phat Burrito",
+    position: {
+        lat: 35.214981,
+        lng: -80.856628
     },
-    {
-      name : "Pike's Old Fashioned Soda Shop",
-      position: {lat: 35.210699, lng: -80.860697},
-      genre : "American",
-      show: true
+    genre: "Mexican",
+    show: true
+}, {
+    name: "Pike's Old Fashioned Soda Shop",
+    position: {
+        lat: 35.210699,
+        lng: -80.860697
     },
-    {
-      name : "Crispy Crepe",
-      position: {lat: 35.214920, lng: -80.854695},
-      genre : "American",
-      show: true
-    }
-    ];
-
-
+    genre: "American",
+    show: true
+}, {
+    name: "Crispy Crepe",
+    position: {
+        lat: 35.214920,
+        lng: -80.854695
+    },
+    genre: "American",
+    show: true
+}];
 
 var viewModel = function() {
+    var self = this;
 
-  var self = this;
+    self.genreList = ko.observableArray();
+    self.markers = ko.observableArray();
+    self.currentFilter = ko.observable(""); // Initialize with an empty string
 
-  self.genreList = ko.observableArray();
-
-  self.filteredList = ko.observableArray();
-
+    // marker creation
     for (i = 0; i < restaurantList.length; i++) {
 
-      var marker = new google.maps.Marker({
-          position: restaurantList[i].position,
-          title: restaurantList[i].name,
-          show: ko.observable(restaurantList[i].show),
-          genre: ko.observable(restaurantList[i].genre),
-          map: map
-          });
+        var marker = new google.maps.Marker({
+            position: restaurantList[i].position,
+            title: restaurantList[i].name,
+            show: ko.observable(restaurantList[i].show),
+            genre: restaurantList[i].genre,
+            map: map
+        });
 
-      if (restaurantList[i].show) {
-      self.filteredList.push(marker); }
+        if (restaurantList[i].show) {
+            self.markers.push(marker);
+        }
     };
 
-  self.currentFilter = ko.observable();
+    restaurantList.forEach(function(restaurant) {
+        var genre = restaurant.genre;
 
-  self.applyFilter = function() {
+        // Unique genres only
+        if (!self.genreList().includes(genre)) {
+            self.genreList.push(genre);
+        }
+    });
 
-    for (i = 0; i < self.filteredList.length; i++) {
-
-      var genre = self.filteredList[i].genre;
-
-      if (genre.localeCompare(self.currentFilter) === 0) {
-
-      restaurantList[i].show = true;
-      } else {
-      restaurantList[i].show = false;
-      }
-      };
-    console.log(ko.toJSON(self.currentFilter));
-    console.log(ko.toJSON(self.filteredList));
-  };
-
-  for (i = 0; i < restaurantList.length; ++i) {
-
-      var genre = restaurantList[i].genre;
-
-        if (self.genreList.indexOf(genre) > -1) continue;
-        self.genreList.push(genre);
-  };
+    // http://www.knockmeout.net/2011/04/utility-functions-in-knockoutjs.html
+    this.filteredMarkers = ko.computed(function() {
+        var filter = self.currentFilter().toLowerCase(); // Case insensitive search
+        console.log('------------------');
+        if (!filter) {
+            return self.markers();
+        } else {
+            return ko.utils.arrayFilter(self.markers(), function(marker) {
+                var genre = marker.genre.toLowerCase();
+                var match = genre.indexOf(filter) !== -1;
+                console.log(genre, filter, match);
+                return match;
+            });
+        }
+    });
 };
 
 
