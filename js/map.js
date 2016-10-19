@@ -79,6 +79,8 @@ var viewModel = function() {
     self.markers = ko.observableArray();
     self.currentFilter = ko.observable(""); // Initialize with an empty string
 
+    var infowindow = new google.maps.InfoWindow();
+
     // marker creation
     for (i = 0; i < restaurantList.length; i++) {
 
@@ -93,6 +95,13 @@ var viewModel = function() {
         if (restaurantList[i].show) {
             self.markers.push(marker);
         }
+
+        google.maps.event.addListener(marker, 'click', (function(marker, i) {
+            return function() {
+                infowindow.setContent(restaurantList[i][0]);
+                infowindow.open(map, marker);
+            }
+        })(marker, i));
     };
 
     restaurantList.forEach(function(restaurant) {
@@ -106,9 +115,9 @@ var viewModel = function() {
 
     // http://www.knockmeout.net/2011/04/utility-functions-in-knockoutjs.html
     this.filteredMarkers = ko.computed(function() {
-        var filter = self.currentFilter().toLowerCase(); // Case insensitive search
+        var filter = self.currentFilter(); // Case insensitive search
         console.log('------------------');
-        if (!filter) {
+        if (!filter || self.currentFilter === undefined) {
             return self.markers();
         } else {
             return ko.utils.arrayFilter(self.markers(), function(marker) {
