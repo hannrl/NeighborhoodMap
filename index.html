@@ -14,7 +14,7 @@
             <h1><span>Dog-Friendly Restaurants in</span><br>
             SouthEnd Charlotte</h1>
             <div class="dropdown">
-                <h2>Select a category to filter by</h2><select data-bind="options: genreList, value: currentFilter, optionsCaption: 'Choose'"></select>
+                <h2>Select a category to filter by</h2><select data-bind="options: genreList, click: closeInfoWindows, value: currentFilter, optionsCaption: 'All'"></select>
             </div>
             <div data-bind="foreach: filteredMarkers">
                 <li>

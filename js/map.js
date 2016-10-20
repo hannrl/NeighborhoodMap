@@ -80,7 +80,6 @@ var viewModel = function() {
     self.currentFilter = ko.observable(""); // Initialize with an empty string
 
     var infowindow = new google.maps.InfoWindow();
-
     var infowindows = [];
 
     // marker creation
@@ -121,57 +120,60 @@ var viewModel = function() {
 
     // http://www.knockmeout.net/2011/04/utility-functions-in-knockoutjs.html
     self.filteredMarkers = ko.computed(function() {
-        var filter = self.currentFilter(); // Case insensitive search
+         map.panTo({lat: 35.211698, lng: -80.857594});
+         map.setZoom(15);
+        var filter = self.currentFilter();
         if (!filter || self.currentFilter() === undefined) {
+            for (i = 0; i < self.markers().length; i++)
+                self.markers()[i].setVisible(true); //shows all markers again when 'All' is chosen from drop-down
             return self.markers();
         } else {
-            return ko.utils.arrayFilter(self.markers(), function(marker) {
+            return self.markers().filter(function(marker) {
                 var genre = marker.genre;
                 var match = genre.indexOf(filter) !== -1;
                 self.hideUnselected(marker, match);
                 return match;
             });
-            self.centerMap();
+
 
         }
     });
     //hides the markers of locations that didn't match the genre selected or shows the markers that did match
-        self.hideUnselected = function(marker, match) {
-            if (match === false) {
-        marker.setVisible(false);
-    } else {
-        marker.setVisible(true);
-    }
+    self.hideUnselected = function(marker, match) {
+        if (match === false) {
+            marker.setVisible(false);
+        } else {
+            marker.setVisible(true);
+        }
         self.closeInfoWindows();
     }
 
     //closes all infowindows when called
-        self.closeInfoWindows = function () {
+    self.closeInfoWindows = function() {
+        console.log("Hannah");
         for (var i = 0; i < infowindows.length; i++) {
-          infowindows[i].close();
+            infowindows[i].close();
         }
-      }
+    }
 
-    //centers map
-    self.centerMap = function () {
-        map.center.lat(35.211698);
-        map.center.lng(80.857594);
-        map.zoom(15);
-              }
+    //resets map to original center
+    self.centerMap = function() {
+        map.panTo(new GLatLng(35.211698,-80.857594));
+    }
 
 
     //zooms to and opens infowindow of restaurant selected from the right nav
     self.goToRestaurant = function(clickedRestaurant) {
-    for(i = 0; i < self.markers().length; i++) {
-      if(clickedRestaurant.title === self.markers()[i].title) {
-        map.panTo(self.markers()[i].position);
-        map.setZoom(18);
-        clickedRestaurant.setVisible(true);
-        infowindow.open(map, self.markers()[i]);
-        infowindow.setContent(self.markers()[i].genre);
-      }
-    }
-  };
+        for (i = 0; i < self.markers().length; i++) {
+            if (clickedRestaurant.title === self.markers()[i].title) {
+                map.panTo(self.markers()[i].position);
+                map.setZoom(18);
+                clickedRestaurant.setVisible(true);
+                infowindow.open(map, self.markers()[i]);
+                infowindow.setContent(self.markers()[i].genre);
+            }
+        }
+    };
 };
 
 ko.applyBindings(new viewModel());
