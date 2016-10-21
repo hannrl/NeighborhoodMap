@@ -30,6 +30,9 @@ body {
     width: 250px;
     font-size: 1.2vw;
 }
+#infowindow>span {
+    font-weight: 900;
+}
 h1 {
     font-family: "Lato", sans-serif;
     font-weight: 900;
@@ -80,11 +83,11 @@ ul {
     }
     @media only screen and (max-width: 700px) {
         #restaurantThumb>img {
-            display: none;
+            max-width: 100px;
         }
         #infowindow {
             max-width: 100px;
-            font-size: 1.1vw;
+            font-size: 2vw;
         }
         h1 {
             font-size: 4vw;
@@ -104,11 +107,11 @@ ul {
         }
         @media only screen and (max-width: 401px) {
             #restaurantThumb>img {
-                display: none;
+                max-width: 50px;
             }
             #infowindow {
-                max-width: 75px;
-                font-size: 1vw;
+                max-width: 50px;
+                font-size: 2vw;
             }
             h1 {
                 font-size: 4vw;
