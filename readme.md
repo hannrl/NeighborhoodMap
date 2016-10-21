@@ -3,7 +3,7 @@ Udacity Neighborhood Map Project
 I have created a map of the SouthEnd neighborhood of Charlotte, NC, USA! It features nine of the most popular dog-friendly restaurants and retrieves unique details about each one from Zomato.
 
 To open:
-1) Make sure you have an interner connection
+1) Make sure you have an internet connection
 2) Visit https://github.com/hannrl/NeighborhoodMap
 3) Click to green 'Clone or Download' button
 4) Choose 'Download ZIP'
