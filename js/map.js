@@ -19,8 +19,8 @@ var restaurantList = [{
 }, {
     title: "Hot Taco",
     position: {
-        lat: 35.216740,
-        lng: -80.858839
+        lat: 35.216703,
+        lng: -80.854397
     },
     genre: "Mexican",
     show: true,
@@ -89,8 +89,12 @@ var viewModel = function() {
         self.currentFilter = ko.observable(""); // Initialize with an empty string
 
         var infowindow = new google.maps.InfoWindow();
-
+        var marker;
         var infowindows = [];
+        self.zmtAddress;
+        self.zmtCost;
+        self.zmtThumb;
+        self.infoWindowContent;
 
         // marker creation
         for (i = 0; i < restaurantList.length; i++) {
@@ -100,9 +104,9 @@ var viewModel = function() {
                 title: restaurantList[i].title,
                 show: ko.observable(restaurantList[i].show),
                 genre: restaurantList[i].genre,
+                animation: google.maps.Animation.DROP,
                 map: map,
                 id: restaurantList[i].id,
-                content: ""
             });
 
             if (restaurantList[i].show) {
@@ -111,12 +115,15 @@ var viewModel = function() {
 
             google.maps.event.addListener(marker, 'click', (function(marker, i) {
                 return function() {
-                    getZomatoInfo(marker.id);
-                    infowindow.setContent(marker.content);
-                    infowindow.open(map, marker);
+                    getZomatoInfo(marker.id); //makes ajax call to Zomato API using the restaurant's Zomato ID
+                    self.goToRestaurant(marker);
+                    marker.setAnimation(google.maps.Animation.BOUNCE);
+                    setTimeout(function(){ marker.setAnimation(null); }, 1500); //stops after two bounces
                     infowindows.push(infowindow);
+                    infowindow.open(map, marker);
                 }
             })(marker, i));
+
         };
 
         restaurantList.forEach(function(restaurant) {
@@ -166,7 +173,6 @@ var viewModel = function() {
 
         //closes all infowindows when called
         self.closeInfoWindows = function() {
-            console.log("Hannah");
             for (var i = 0; i < infowindows.length; i++) {
                 infowindows[i].close();
             }
@@ -182,18 +188,18 @@ var viewModel = function() {
 
         //zooms to and opens infowindow of restaurant selected from the right nav
         self.goToRestaurant = function(clickedRestaurant) {
+            clickedRestaurant.setAnimation(google.maps.Animation.BOUNCE);
+            setTimeout(function(){ clickedRestaurant.setAnimation(null); }, 1500); //stops after two bounces
             for (i = 0; i < self.markers().length; i++) {
                 if (clickedRestaurant.title === self.markers()[i].title) {
+                    getZomatoInfo(clickedRestaurant.id);
                     map.panTo(self.markers()[i].position);
                     map.setZoom(18);
                     clickedRestaurant.setVisible(true);
                     infowindow.open(map, self.markers()[i]);
-                    infowindow.setContent(self.markers()[i].content);
                 }
             }
         };
-
-        self.zmtInfo = [];
 
         function getZomatoInfo(restaurantId) {
             var zomatoUrl = "https://developers.zomato.com/api/v2.1/restaurant?apikey=9f57bb53795b372e56c81c59706568ca&res_id=";
@@ -201,13 +207,18 @@ var viewModel = function() {
 
             $.ajax({
                 url: zomatoUrl + restId,
-                dataType: 'json',
+                dataType: 'jsonp',
                 success: function(data) {
-                    var zmtAddress = data.location.address;
-                    var zmtCost = data.average_cost_for_two;
-                    var zmtThumb = data.thumb;
+                    self.zmtAddress = data.location.address;
+                    self.zmtCost = data.average_cost_for_two;
+                    self.zmtThumb = data.thumb;
+                    self.zmtName = data.name;
+                    console.log(self.zmtName);
+                    self.infoWindowContent = '<div id= "infowindow">' + self.zmtAddress + '<br>' + self.zmtName + '</div>';
+                    infowindow.setContent(self.infoWindowContent);
                 }
             })
+
 
         }
 }
